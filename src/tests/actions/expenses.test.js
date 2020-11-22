@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import database from '../../firebase/firebase';
 import {
   startAddExpense, addExpense, editExpense, removeExpense,
-  setExpenses, startSetExpenses, startRemoveExpense
+  setExpenses, startSetExpenses, startRemoveExpense, startEditExpense
 } from '../../actions/expenses';
 import expenses from '../fixtures/expenses';
 
@@ -70,7 +70,7 @@ test('Should add expense with defaults to database and store', (done) => {
   }
   store.dispatch(startAddExpense()).then(() => {
     const actions = store.getActions();
-    console.log(actions);
+    //console.log(actions);
     expect(actions[0]).toEqual({
       type: 'ADD_EXPENSE',
       expense: {
@@ -105,7 +105,7 @@ test('Should fetch the expenses from firebase', () => {
 });
 
 
-test('Should remove expens from firebase', (done) => {
+test('Should remove expense from firebase', (done) => {
   const store = createMockStore({});
   const id = expenses[2].id;
   store.dispatch(startRemoveExpense(id)).then(() => {
@@ -117,6 +117,24 @@ test('Should remove expens from firebase', (done) => {
     return database().ref(`expenses/${id}`).once('value');
   }).then((snapshot) => {
     expect(snapshot.val()).toBeFalsy();
+    done();
+  });
+});
+
+test('Should edit expense in firebase', (done) => {
+  const store = createMockStore({});
+  const id = expenses[2].id;
+  const updates = { note: "A fresh change" }
+  store.dispatch(startEditExpense(id, updates)).then(() => {
+    const actions = store.getActions();
+    expect(actions[0]).toEqual({
+      type: 'EDIT_EXPENSE',
+      id,
+      updates
+    });
+    return database().ref(`expenses/${id}`).once('value');
+  }).then((snapshot) => {
+    expect(snapshot.val().note).toEqual(updates.note);
     done();
   });
 });
