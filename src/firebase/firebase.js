@@ -1,6 +1,5 @@
-// import * as firebase from 'firebase';
+import { initializeApp, database,auth } from 'firebase';
 
-import { initializeApp, analytics, database } from 'firebase';
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -14,9 +13,10 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 //analytics();
 
-const databse = database();
 
-export {database as default};
+const googleAuthProvider = new auth.GoogleAuthProvider();
+
+export {googleAuthProvider, auth, database as default};
 
 
 
